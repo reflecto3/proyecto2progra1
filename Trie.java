@@ -6,7 +6,7 @@ public class Trie {
     private Nodo raiz;
 
     public Trie() {
-        raiz = new Nodo(null);
+        raiz = new Nodo();
     }
 
     public void insertar(String palabra, String[][] elemento) {
@@ -54,8 +54,8 @@ public class Trie {
         public static Trie crearDiccionario(String filename) {
         try {
             BufferedReader bfReader = new BufferedReader(new FileReader(filename));
-            String line = bfReader.readLine();
             Trie dct = new Trie();
+            String line = bfReader.readLine();
             while (line != null) {
                 String palabra = line.substring(0,line.indexOf('.'));
                 String[] acepcionesEnHilera = line.substring(line.indexOf('.')+2).split(";");
@@ -80,11 +80,6 @@ public class Trie {
 
         public Nodo() {
             elemento = null;
-            conexiones = new HashMap<>();
-        }
-
-        public Nodo(String[][] elemento) {
-            this.elemento = elemento;
             conexiones = new HashMap<>();
         }
     }
