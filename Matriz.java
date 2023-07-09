@@ -169,7 +169,7 @@ public class Matriz
         return centroidesCuantizados;
     }
 
-    public static Matriz matrizDeCancionCSV(String filename) {
+    public static Matriz matrizDeCancionCSV(int numCols, String filename) {
         try {
             BufferedReader bf = new BufferedReader(new FileReader(filename));
             String line = bf.readLine();
@@ -179,11 +179,15 @@ public class Matriz
                 datos[i] = datosHilera[i].isEmpty() ? 0 : Integer.parseInt(datosHilera[i]);
             }
             bf.close();
-            return new Matriz(88, datos);
+            return new Matriz(numCols, datos);
 
         } catch (IOException e) {
             System.out.println("Error al abrir el archivo");
             return null;
         }
+    }
+
+    public int get(int row, int col) {
+        return arreglo[row][col];
     }
 }

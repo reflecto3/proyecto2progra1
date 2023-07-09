@@ -17,13 +17,18 @@ import java.util.HashMap;
 public class EncuentraAcordes {
     private static final Trie DICCIONARIO = Trie.crearDiccionario("ChordsDictBasicV2.txt");
     private static final int NUMERO_DE_NOTAS = 12;
+    private static final int NUMERO_DE_TECLAS = 88;
     private Matriz cancion;
     private int[][] filasAcordes;
     private static final double TIEMPO_POR_FILA = 256.0/11025;
 
+    // public static void main(String[] args) {
+    //     EncuentraAcordes arc = new EncuentraAcordes("LuisMiguel-ElDiaQueMeQuieras(intro).csv", "LuisMiguel-ElDiaQueMeQuieras(intro).begin.txt", "LuisMiguel-ElDiaQueMeQuieras(intro).end.txt");
+    //     arc.execute();
+    // }
+
     public static void main(String[] args) {
-        EncuentraAcordes arc = new EncuentraAcordes("LuisMiguel-ElDiaQueMeQuieras(intro).csv", "LuisMiguel-ElDiaQueMeQuieras(intro).begin.txt", "LuisMiguel-ElDiaQueMeQuieras(intro).end.txt");
-        arc.execute();
+        new Environment(44, NUMERO_DE_TECLAS, "ArcticMonkeys505.csv");
     }
 
     public void execute() {
@@ -62,7 +67,7 @@ public class EncuentraAcordes {
      * @param endFile Archivo con los tiempos en segundos en que termina cada acorde.
      */
     EncuentraAcordes(String csvFile, String beginFile, String endFile) {
-        cancion = Matriz.matrizDeCancionCSV(csvFile);
+        cancion = Matriz.matrizDeCancionCSV(NUMERO_DE_TECLAS, csvFile);
         filasAcordes = filasDeAcordes(beginFile, endFile);
 
     }

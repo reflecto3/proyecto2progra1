@@ -9,9 +9,6 @@ import java.awt.Color;
  */
 public class Cell
 {
-    // The possible states.
-    // public static final int ALIVE = 0, DEAD = 1, DYING = 2;
-    // The number of possible states.
     public static final int MAX_VOLUME = 255;
     
     

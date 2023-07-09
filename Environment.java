@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.io.*;
-// import java.security.SecureRandom;
-// import java.util.*;
+
 
 
 /**
@@ -13,7 +12,7 @@ import java.io.*;
 public class Environment
 {
     // Default size for the environment.
-    private static final int ROWS = 86;
+    private static final int ROWS = 43;
     private static final int COLS = 88;
     public static final Color PINK = new Color(190, 105, 95);
     public static final Color LIGHT_BLUE = new Color(0, 174, 255);
@@ -21,16 +20,16 @@ public class Environment
     private Cell[][] cells;
     // Visualization of the environment.
     private final EnvironmentView view;
-    private int[] values;
-    private int currentStep;
+    private Matriz cancion;
+    private int currentRow;
 
 
     /**
      * Create an environment with the default size.
      */
-    public Environment()
+    public Environment(String filename)
     {
-        this(ROWS, COLS);
+        this(ROWS, COLS, filename);
     }
 
     /**
@@ -38,13 +37,13 @@ public class Environment
      * @param numRows The number of rows.
      * @param numCols The number of cols;
      */
-    public Environment(int numRows, int numCols)
+    public Environment(int numRows, int numCols, String filename)
     {
         setup(numRows, numCols);
         view = new EnvironmentView(this, numRows, numCols);
         view.showCells();
-        currentStep = 0;
-        values = readCsvToArray("Rimsky Korsakov - Flight of the bumblebee (arr. Rachmaninoff).csv");
+        currentRow = 0;
+        cancion = Matriz.matrizDeCancionCSV(numCols, filename);
     }
     
     /**
@@ -61,10 +60,10 @@ public class Environment
             for(int col = 0; col < numCols; col++) {
                 nextVolumes[row][col] = cells[row+1][col].getVolume();
             }
-        //for the last row, randomize their volumes
+        //for the last row, get from cancion
         try {
             for(int col = 0; col < numCols; col++) {
-                nextVolumes[numRows-1][col] = values[88*currentStep+col];
+                nextVolumes[numRows-1][col] = cancion.get(currentRow, col);
             }
         }
         catch (ArrayIndexOutOfBoundsException e1) {
@@ -88,7 +87,7 @@ public class Environment
                 setCellVolume(row, col, nextVolumes[row][col]);
             }
         }
-        currentStep++;
+        currentRow++;
     }
     
     /**
@@ -103,7 +102,7 @@ public class Environment
                 setCellVolume(row, col, 0);
             }
         }
-        currentStep=0;
+        currentRow=0;
     }
     
     /**

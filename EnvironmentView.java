@@ -20,6 +20,7 @@ public class EnvironmentView extends JFrame
     private final int NUM_WHITE_KEYS;
 
     private final int ORIGINAL_WHITE_HEIGHT;
+    private TextArea chords;
     private GridView view;
     private final Environment env;
     private boolean running;
@@ -38,12 +39,24 @@ public class EnvironmentView extends JFrame
         this.running = false;
         setDelay(50);
         setupControls();
+        setupChords();
         NUM_WHITE_KEYS = 52; //tengo que hacer el calculo despues
         ORIGINAL_WHITE_HEIGHT = (int)(WHITE_KEY_HEIGHT_TO_WIDTH*cols/NUM_WHITE_KEYS);
         setupGrid(rows, cols);
         pack();
         setVisible(true);
         super.setBackground(Color.BLACK);
+    }
+
+    private void setupChords() {
+        chords = new TextArea("Acorde _ \n 1. A \n 2. A \n 3. A", 3, 20, TextArea.SCROLLBARS_NONE);
+        chords.setEditable(false);
+        chords.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 17));
+        getContentPane().add(chords, BorderLayout.NORTH);
+    }
+
+    private void updateChords(int numAcorde, String acorde1, String acorde2, String acorde3) {
+        chords.setText("Acorde " + numAcorde + ":\n   1. " + acorde1 + "\n   2. " + acorde2 + "\n   3. " + acorde3);
     }
 
     /**
@@ -132,6 +145,7 @@ public class EnvironmentView extends JFrame
         step.addActionListener(e -> {
             running = false;
             env.step();
+            updateChords((int)(Math.random() * 100), "" +Math.random(), "" +Math.random(), "" +Math.random());
             showCells();
         });
         
