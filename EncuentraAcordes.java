@@ -37,10 +37,20 @@ public class EncuentraAcordes {
             // System.out.println(Arrays.toString(volumenes));
 
             int[] clasesRelativizadas = clasesRelativizadas(clases);
-            System.out.println(Arrays.toString(clases) + "\n" + Arrays.toString(clasesRelativizadas));
+            // System.out.println(Arrays.toString(clases) + "\n" + Arrays.toString(clasesRelativizadas));
 
-            String palabra = formarPalabra(int[] clasesRelativizadas, int[] volumenes);
+            String palabra = formarPalabra(clasesRelativizadas, volumenes);
+            String[][] acepciones = DICCIONARIO.getClosestElement(palabra);
+            for (String[] a: acepciones) {
+                System.out.print(Arrays.toString(a));
+            }
+            desrelativizarAcepciones(acepciones, clases[0]);
 
+            System.out.println("\n" + Arrays.toString(clases));
+            for (String[] a: acepciones) {
+                System.out.print(Arrays.toString(a));
+            }
+            System.out.println();
 
         }
     }
@@ -163,7 +173,7 @@ public class EncuentraAcordes {
         }
 
         String palabra = "";
-        for (int i = 0; i < clasesRelativizadas.length; i++) {
+        for (int i = 1; i < clasesRelativizadas.length; i++) { // i = 1 para que la palabra no inicie en 0
             if (volumenes[i] == 0) {
                 break;
             }
@@ -176,6 +186,21 @@ public class EncuentraAcordes {
         }
 
         return palabra;
+    }
+
+    private int claseDuodecimalADecimal(String clase) {
+        switch (clase) {
+            case "A": return 10;
+            case "B": return 11;
+            default: return Integer.parseInt(clase); 
+        }
+    }
+
+    private void desrelativizarAcepciones(String[][] acepciones, int clasePrincipal) {
+        for (int i = 0; i < acepciones.length; i++) {
+            acepciones[i][0] = "" + (claseDuodecimalADecimal(acepciones[i][0]) + clasePrincipal) % NUMERO_DE_NOTAS;
+            acepciones[i][1] = "" + (claseDuodecimalADecimal(acepciones[i][1]) + clasePrincipal) % NUMERO_DE_NOTAS;
+        }
     }
 }
 

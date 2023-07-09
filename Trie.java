@@ -40,15 +40,30 @@ public class Trie {
         inicio.elemento = elemento;
     }
 
-    public String[][] getElement(String palabra) {
+    // public String[][] getElement(String palabra) {
+    //     Nodo actual = raiz;
+    //     for (int i = 0; i < palabra.length(); i++) {
+    //         actual = actual.conexiones.get(palabra.charAt(i));
+    //         if (actual == null) {
+    //             return null;
+    //         }
+    //     }
+    //     return actual.elemento;
+    // }
+
+    public String[][] getClosestElement(String palabra) {
         Nodo actual = raiz;
-        for (int i = 0; i < palabra.length(); i++) {
+        String[][] ultimoElemento = null;
+        for (int i = 0; i< palabra.length(); i++) {
             actual = actual.conexiones.get(palabra.charAt(i));
             if (actual == null) {
-                return null;
+                return ultimoElemento;
+            }
+            if (actual.elemento != null) {
+                ultimoElemento = actual.elemento;
             }
         }
-        return actual.elemento;
+        return ultimoElemento;
     }
 
         public static Trie crearDiccionario(String filename) {
@@ -61,7 +76,7 @@ public class Trie {
                 String[] acepcionesEnHilera = line.substring(line.indexOf('.')+2).split(";");
                 String[][] acepciones = new String[acepcionesEnHilera.length][];
                 for (int i = 0; i < acepcionesEnHilera.length; i++) {
-                    acepciones[i] = acepcionesEnHilera[i].trim().split(",");
+                    acepciones[i] = acepcionesEnHilera[i].trim().split(",", -1);
                 }
                 dct.insertar(palabra, acepciones);
                 line = bfReader.readLine();
