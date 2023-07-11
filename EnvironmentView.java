@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-// import java.awt.event.*;
-// import javax.swing.event.*;
+
 
 /**
  * A GUI for the environment, with runtime controls.
@@ -11,20 +10,19 @@ import java.awt.*;
  */
 public class EnvironmentView extends JFrame
 {
-    // The longest delay for the animation, in milliseconds.
-    private static final int LONGEST_DELAY = 46; //2*23, speedslider takes 50% as default
-    // Colors for the different cell states.
+    private static final double DELAY = 256000.0/11025;
     private static final double WHITE_KEY_HEIGHT_TO_WIDTH = 3.562091503267974;
     private static final double BLACK_KEY_HEIGHT_TO_WIDTH = 3.783505154639175;
     private static final double BLACK_WHITE_WIDTH_RATIO   = 7.0/12;
     private final int NUM_WHITE_KEYS;
 
     private final int ORIGINAL_WHITE_HEIGHT;
-    private TextArea chords;
+    private JTextArea chords;
     private GridView view;
     private final Environment env;
     private boolean running;
-    private int delay;
+    private long startTime;
+    private int startRow;
     
     /**
      * Constructor for objects of class EnvironmentView
@@ -32,12 +30,11 @@ public class EnvironmentView extends JFrame
      */
     public EnvironmentView(Environment env, int rows, int cols)
     {
-        super("Pianola aleatoria");
+        super("Encuentra Acordes");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocation(20, 20);
         this.env = env;
         this.running = false;
-        setDelay(50);
         setupControls();
         setupChords();
         NUM_WHITE_KEYS = 52; //tengo que hacer el calculo despues
@@ -45,13 +42,16 @@ public class EnvironmentView extends JFrame
         setupGrid(rows, cols);
         pack();
         setVisible(true);
-        super.setBackground(Color.BLACK);
+        setBackground(Color.BLACK);
     }
 
     private void setupChords() {
-        chords = new TextArea("Acorde _ \n 1. A \n 2. A \n 3. A", 3, 20, TextArea.SCROLLBARS_NONE);
+        chords = new JTextArea("Acorde _ \n 1. A \n 2. A \n 3. A");
         chords.setEditable(false);
-        chords.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 17));
+        chords.setBorder(BorderFactory.createEmptyBorder());
+        chords.setBackground(Color.DARK_GRAY);
+        chords.setForeground(Color.WHITE);
+        chords.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
         getContentPane().add(chords, BorderLayout.NORTH);
     }
 
@@ -132,6 +132,8 @@ public class EnvironmentView extends JFrame
         run.addActionListener(e -> {
             if(!running) {
                 running = true;
+                startTime = System.currentTimeMillis();
+                startRow = env.getCurrentRow();
                 try {
                     new Runner().execute();
                 }
@@ -163,18 +165,6 @@ public class EnvironmentView extends JFrame
         
 
         Container contents = getContentPane();
-
-        
-        // A speed controller.
-        final JSlider speedSlider = new JSlider(0, 100);
-        speedSlider.addChangeListener(e -> {
-            setDelay(speedSlider.getValue());
-        });
-        Container speedPanel = new JPanel();
-        speedPanel.setLayout(new GridLayout(2, 1));
-        speedPanel.add(new JLabel("Animation Speed", SwingConstants.CENTER));
-        speedPanel.add(speedSlider);
-        contents.add(speedPanel, BorderLayout.NORTH);
         
         // Place the button controls.
         JPanel controls = new JPanel();
@@ -182,18 +172,9 @@ public class EnvironmentView extends JFrame
         controls.add(step);
         controls.add(pause);
         controls.add(reset);
+        controls.setBackground(Color.DARK_GRAY);
         
         contents.add(controls, BorderLayout.SOUTH);
-    }
-
-    
-    /**
-     * Set the animation delay.
-     * @param speedPercentage (100-speedPercentage) as a percentage of the LONGEST_DELAY.
-     */
-    private void setDelay(int speedPercentage)
-    {
-        delay = (int) ((100.0 - speedPercentage) * LONGEST_DELAY / 100);
     }
     
     /**
@@ -212,7 +193,7 @@ public class EnvironmentView extends JFrame
                 env.step();
                 showCells();
                 try {
-                    Thread.sleep(delay);
+                    Thread.sleep((long)((env.getCurrentRow()-startRow)*DELAY+startTime-System.currentTimeMillis()));
                 }
                 catch(InterruptedException e) {
                 }

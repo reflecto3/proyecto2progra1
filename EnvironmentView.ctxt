@@ -1,0 +1,20 @@
+#BlueJ class context
+comment0.target=EnvironmentView
+comment0.text=\r\n\ A\ GUI\ for\ the\ environment,\ with\ runtime\ controls.\r\n\ \r\n\ @author\ David\ J.\ Barnes\ and\ Michael\ K\u00C3\u00B6lling\r\n\ @version\ \ 2016.02.29\r\n
+comment1.params=env\ rows\ cols
+comment1.target=EnvironmentView(Environment,\ int,\ int)
+comment1.text=\r\n\ Constructor\ for\ objects\ of\ class\ EnvironmentView\r\n\ @param\ env\r\n
+comment2.params=
+comment2.target=void\ setupChords()
+comment3.params=numAcorde\ acorde1\ acorde2\ acorde3
+comment3.target=void\ updateChords(int,\ java.lang.String,\ java.lang.String,\ java.lang.String)
+comment4.params=rows\ cols
+comment4.target=void\ setupGrid(int,\ int)
+comment4.text=\r\n\ Setup\ a\ new\ environment\ of\ the\ given\ size.\r\n\ @param\ rows\ The\ number\ of\ rows.\r\n\ @param\ cols\ The\ number\ of\ cols;\r\n
+comment5.params=
+comment5.target=void\ showCells()
+comment5.text=\r\n\ Show\ the\ states\ of\ the\ cells.\r\n
+comment6.params=
+comment6.target=void\ setupControls()
+comment6.text=\r\n\ Set\ up\ the\ animation\ controls.\r\n
+numComments=7

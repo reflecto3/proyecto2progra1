@@ -21,15 +21,24 @@ public class Environment
     // Visualization of the environment.
     private final EnvironmentView view;
     private Matriz cancion;
+    private String mp3Actual;
+    private MusicPlayer player;
     private int currentRow;
-
+    
+    /**
+     * Create an environment with the default size.
+     */
+    public Environment(String csvFilename)
+    {
+        this(ROWS, COLS, csvFilename, null);
+    }
 
     /**
      * Create an environment with the default size.
      */
-    public Environment(String filename)
+    public Environment(String csvFilename, String mp3Filename)
     {
-        this(ROWS, COLS, filename);
+        this(ROWS, COLS, csvFilename, mp3Filename);
     }
 
     /**
@@ -37,13 +46,14 @@ public class Environment
      * @param numRows The number of rows.
      * @param numCols The number of cols;
      */
-    public Environment(int numRows, int numCols, String filename)
+    public Environment(int numRows, int numCols, String csvFilename, String mp3Filename)
     {
         setup(numRows, numCols);
         view = new EnvironmentView(this, numRows, numCols);
         view.showCells();
         currentRow = 0;
-        cancion = Matriz.matrizDeCancionCSV(numCols, filename);
+        cancion = Matriz.matrizDeCancionCSV(numCols, csvFilename);
+        mp3Actual = mp3Filename;
     }
     
     /**
@@ -67,17 +77,17 @@ public class Environment
             }
         }
         catch (ArrayIndexOutOfBoundsException e1) {
-            try {
-                Thread.sleep(5000);
-                view.setVisible(false);
-                view.dispose();
-                System.exit(0);
-            }
-            catch (InterruptedException e2) {
-                view.setVisible(false);
-                view.dispose();
-                System.exit(0);
-            }
+            // try {
+            //     Thread.sleep(5000);
+            //     view.setVisible(false);
+            //     view.dispose();
+            //     System.exit(0);
+            // }
+            // catch (InterruptedException e2) {
+            //     view.setVisible(false);
+            //     view.dispose();
+            //     System.exit(0);
+            // }
         }
 
         }
@@ -104,6 +114,11 @@ public class Environment
         }
         currentRow=0;
     }
+
+    public boolean playCurrentSong() {
+        player.startPlaying(mp3Actual);
+        return true;
+    }
     
     /**
      * Set the volume (and therefore color intensity) of one cell.
@@ -123,6 +138,10 @@ public class Environment
     public Cell[][] getCells()
     {
         return cells;
+    }
+
+    public int getCurrentRow() {
+        return currentRow;
     }
     
     /**

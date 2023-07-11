@@ -22,42 +22,41 @@ public class EncuentraAcordes {
     private int[][] filasAcordes;
     private static final double TIEMPO_POR_FILA = 256.0/11025;
 
-    // public static void main(String[] args) {
-    //     EncuentraAcordes arc = new EncuentraAcordes("LuisMiguel-ElDiaQueMeQuieras(intro).csv", "LuisMiguel-ElDiaQueMeQuieras(intro).begin.txt", "LuisMiguel-ElDiaQueMeQuieras(intro).end.txt");
-    //     arc.execute();
-    // }
-
     public static void main(String[] args) {
-        new Environment(44, NUMERO_DE_TECLAS, "ArcticMonkeys505.csv");
+        new Environment("ArcticMonkeys505.csv");
+        EncuentraAcordes arc = new EncuentraAcordes("LuisMiguel-ElDiaQueMeQuieras(intro).csv", "LuisMiguel-ElDiaQueMeQuieras(intro).begin.txt", "LuisMiguel-ElDiaQueMeQuieras(intro).end.txt");
+        arc.execute(1);
     }
 
-    public void execute() {
-        for (int numAcorde = 0; numAcorde < filasAcordes.length; numAcorde++) {
-            System.out.println("ACORDE " + (numAcorde+1));
-            int[] volumenes = cancion.sumaPeriodicaSobreColumnas(filasAcordes[numAcorde][0], filasAcordes[numAcorde][1], NUMERO_DE_NOTAS);
-            int[] clases = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
-            ordenarDecendienteSegunCriterio(clases, volumenes);
-            // System.out.println(Arrays.toString(volumenes) + "\n" + Arrays.toString(clases));
-            volumenes = eliminarNotasConVolumenMenorAl(volumenes);
-            // System.out.println(Arrays.toString(volumenes));
-
-            int[] clasesRelativizadas = clasesRelativizadas(clases);
-            // System.out.println(Arrays.toString(clases) + "\n" + Arrays.toString(clasesRelativizadas));
-
-            String palabra = formarPalabra(clasesRelativizadas, volumenes);
-            String[][] acepciones = DICCIONARIO.getClosestElement(palabra);
-            for (String[] a: acepciones) {
-                System.out.print(Arrays.toString(a));
-            }
-            desrelativizarAcepciones(acepciones, clases[0]);
-
-            System.out.println("\n" + Arrays.toString(clases));
-            for (String[] a: acepciones) {
-                System.out.print(Arrays.toString(a));
-            }
-            System.out.println();
-
+    public void execute(int numAcorde) {
+        if (numAcorde < 0 || numAcorde > filasAcordes.length) {
+            System.out.println("ACORDE INVALIDO.");
+            return;
         }
+        System.out.println("ACORDE " + (numAcorde+1));
+        int[] volumenes = cancion.sumaPeriodicaSobreColumnas(filasAcordes[numAcorde][0], filasAcordes[numAcorde][1], NUMERO_DE_NOTAS);
+        int[] clases = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+        Ordenar.ordenDescendente(clases, volumenes);
+        // System.out.println(Arrays.toString(volumenes) + "\n" + Arrays.toString(clases));
+        volumenes = eliminarNotasConVolumenMenorAl(volumenes);
+        // System.out.println(Arrays.toString(volumenes));
+
+        int[] clasesRelativizadas = clasesRelativizadas(clases);
+        // System.out.println(Arrays.toString(clases) + "\n" + Arrays.toString(clasesRelativizadas));
+
+        String palabra = formarPalabra(clasesRelativizadas, volumenes);
+        String[][] acepciones = DICCIONARIO.getClosestElement(palabra);
+        for (String[] a: acepciones) {
+            System.out.print(Arrays.toString(a));
+        }
+        desrelativizarAcepciones(acepciones, clases[0]);
+
+        System.out.println("\n" + Arrays.toString(volumenes));
+        System.out.println("\n" + Arrays.toString(clases));
+        for (String[] a: acepciones) {
+            System.out.print(Arrays.toString(a));
+        }
+        System.out.println();
     }
     
     /**
@@ -80,7 +79,7 @@ public class EncuentraAcordes {
      * @param endFile
      * @return int[][] con las filas de inicio y de finalizacion de cada acorde.
      */
-    public static int[][] filasDeAcordes(String beginFile, String endFile) {
+    private static int[][] filasDeAcordes(String beginFile, String endFile) {
         try {
             BufferedReader bfBegin = new BufferedReader(new FileReader(beginFile));
             BufferedReader bfEnd = new BufferedReader(new FileReader(endFile));
@@ -106,7 +105,7 @@ public class EncuentraAcordes {
         }
     }
 
-    public static int[] eliminarNotasConVolumenMenorAl(int[] lista){
+    private static int[] eliminarNotasConVolumenMenorAl(int[] lista){
         double suma = 0;
         int[] listaActualizada = lista.clone();
         for(int i = 0; i < lista.length; i++){
@@ -120,46 +119,6 @@ public class EncuentraAcordes {
             }
         }
         return listaActualizada;
-    }
-    
-    private static void ordenarDecendienteSegunCriterio(int[] arr, int[] criterio) {
-        if (arr.length != criterio.length) {
-            System.err.println("La longitud del arreglo y del criterio tienen que ser la misma.");
-            return;
-        }
-        
-        for (int i = 1; i < arr.length; i++) {
-            int insertArr = arr[i];
-            int insertCriterio = criterio[i];
-            int j = i - 1;
-            while (j >= 0 && criterio[j] < insertCriterio) {
-                criterio[j+1] = criterio[j];
-                arr[j+1] = arr[j];
-                j--;
-            }
-            criterio[j+1] = insertCriterio;
-            arr[j+1] = insertArr;
-        }
-    }
-    
-    
-    public static String CambiarClaseANotaMusical(int clase){
-        HashMap<Integer, String> claseToString = new HashMap<Integer, String>();
-       
-        claseToString.put(0, "A");
-        claseToString.put(1, "A#");
-        claseToString.put(2, "B");
-        claseToString.put(3, "C");
-        claseToString.put(4, "C#");
-        claseToString.put(5, "D");
-        claseToString.put(6, "D#");
-        claseToString.put(7, "E");
-        claseToString.put(8, "F");
-        claseToString.put(9, "F#");
-        claseToString.put(10, "G");
-        claseToString.put(11, "G#");
-        String notaMusical = claseToString.get(clase);
-        return notaMusical;
     }
 
     private static int[] clasesRelativizadas(int[] clases) {
@@ -205,6 +164,76 @@ public class EncuentraAcordes {
         for (int i = 0; i < acepciones.length; i++) {
             acepciones[i][0] = "" + (claseDuodecimalADecimal(acepciones[i][0]) + clasePrincipal) % NUMERO_DE_NOTAS;
             acepciones[i][1] = "" + (claseDuodecimalADecimal(acepciones[i][1]) + clasePrincipal) % NUMERO_DE_NOTAS;
+        }
+    }
+
+    private static String[][] matrizCaracteristicasNotas(String[][] matrizAcepcionesInterpretadas, int[] notasCaracteristicas, int[] clases){
+        String[][] matrizNueva = matrizAcepcionesInterpretadas.clone();
+        //Se asocian las clases con las notas musicales (Usamos la nomenclatura estadounidense)
+        HashMap<String, String> claseToString = new HashMap<String, String>();
+        claseToString.put("0", "A");
+        claseToString.put("1", "A#");
+        claseToString.put("2", "B");
+        claseToString.put("3", "C");
+        claseToString.put("4", "C#");
+        claseToString.put("5", "D");
+        claseToString.put("6", "D#");
+        claseToString.put("7", "E");
+        claseToString.put("8", "F");
+        claseToString.put("9", "F#");
+        claseToString.put("10", "G");
+        claseToString.put("11", "G#");
+
+        //Se asignan las clases y notas
+        HashMap<Integer, Integer> caracteristicaToclase = new HashMap<Integer, Integer>();
+        for(int k = 0; k < 12; k++){
+            caracteristicaToclase.put(clases[k], notasCaracteristicas[k]);
+        }
+
+        for(int i = 0; i < matrizNueva.length; i++){
+            for(int j = 0; j < 1; j++){
+                matrizNueva[i][j] = Integer.toString(caracteristicaToclase.get(Integer.parseInt(matrizAcepcionesInterpretadas[i][j])));
+            }
+        }
+
+        for(int i = 0; i < matrizNueva.length; i++){
+            for(int j = 1; j < 2; j++){
+                matrizNueva[i][j] = claseToString.get(matrizAcepcionesInterpretadas[i][j]);
+            }
+        }
+        return matrizNueva;
+    }
+    
+    // Metodo para ordenar y obtener los acordes de matrizCaracteristicasNotas
+    public static void acordes(String[][] matrizCaracteristicasNotas){
+        int[] columnaDeNotasCaracteristicas = new int[matrizCaracteristicasNotas.length];
+        String[] acordesAsociados = new String[matrizCaracteristicasNotas.length];
+
+        for(int i = 0; i < matrizCaracteristicasNotas.length; i++){
+            columnaDeNotasCaracteristicas[i] = Integer.parseInt(matrizCaracteristicasNotas[i][0]);
+            acordesAsociados[i] = matrizCaracteristicasNotas[i][1] + " " + matrizCaracteristicasNotas[i][2];
+        }
+
+        //Se ordenan los acordes asociados con base en las notas características
+        Ordenar.ordenAscendenteString(acordesAsociados, columnaDeNotasCaracteristicas);
+
+        // Se eliminan los acordes repetidos si es que los hay
+        acordesAsociados = Arrays.stream(acordesAsociados).distinct().toArray(String[]::new);
+
+        // Se imprimen los acordes sugeridos
+        System.out.println("Acordes sugeridos: ");
+        // Imprimimos los acordes si la cantidad de acordes es menor o igual que tres 
+        if(acordesAsociados.length < 3){
+            for(int k = 0; k < acordesAsociados.length; k++){
+                System.out.println(acordesAsociados[k].replace("maj", " "));
+            }
+        }
+        
+        // Si hay mas de 3 solo se reportan los primeros tres.
+        else{
+            for(int k = 0; k < 3; k++){
+                System.out.println(acordesAsociados[k].replace("maj", " "));    
+            }
         }
     }
 }
