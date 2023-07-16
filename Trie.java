@@ -40,30 +40,32 @@ public class Trie {
         inicio.elemento = elemento;
     }
 
-    // public String[][] getElement(String palabra) {
-    //     Nodo actual = raiz;
-    //     for (int i = 0; i < palabra.length(); i++) {
-    //         actual = actual.conexiones.get(palabra.charAt(i));
-    //         if (actual == null) {
-    //             return null;
-    //         }
-    //     }
-    //     return actual.elemento;
-    // }
-
     public String[][] getClosestElement(String palabra) {
         Nodo actual = raiz;
         String[][] ultimoElemento = null;
-        for (int i = 0; i< palabra.length(); i++) {
+        for (int i = 0; i < palabra.length(); i++) {
             actual = actual.conexiones.get(palabra.charAt(i));
             if (actual == null) {
-                return ultimoElemento;
+                return cloneArray(ultimoElemento); 
             }
             if (actual.elemento != null) {
-                ultimoElemento = actual.elemento;
+                ultimoElemento = cloneArray(actual.elemento); 
             }
         }
-        return ultimoElemento;
+        return cloneArray(ultimoElemento); 
+    }
+
+    // Método para clonar el arreglo ultimoElemento
+    private String[][] cloneArray(String[][] arr) {
+        if (arr == null) {
+            return null;
+        }
+        
+        String[][] clone = new String[arr.length][];
+        for (int i = 0; i < arr.length; i++) {
+            clone[i] = arr[i].clone();
+        }
+        return clone;
     }
 
         public static Trie crearDiccionario(String filename) {

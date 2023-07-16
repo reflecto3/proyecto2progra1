@@ -1,9 +1,0 @@
-#BlueJ class context
-comment0.target=Ordenar
-comment1.params=
-comment1.target=Ordenar()
-comment2.params=lista1\ lista2
-comment2.target=void\ ordenDescendente(int[],\ int[])
-comment3.params=hileras\ numeros
-comment3.target=void\ ordenAscendenteString(java.lang.String[],\ int[])
-numComments=4

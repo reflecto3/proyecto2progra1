@@ -135,7 +135,7 @@ public class Matriz
                 }
                 centroides[i] += col * sumaColumna;
             }
-            centroides[i] = sumaTotal == 0 ? Integer.MIN_VALUE : centroides[i]/sumaTotal; // se utiliza Integer.MIN_VALUE como simbolo de que se indefine.
+            centroides[i] = sumaTotal == 0 ? Integer.MAX_VALUE : centroides[i]/sumaTotal; // se utiliza Integer.MIN_VALUE como simbolo de que se indefine.
         }
         return centroides;
     }
