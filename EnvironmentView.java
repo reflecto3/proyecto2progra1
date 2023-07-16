@@ -8,12 +8,12 @@ import java.awt.*;
  * @author David J. Barnes and Michael Kölling
  * @version  2016.02.29
  */
-public class EnvironmentView extends JFrame
-{
+public class EnvironmentView extends JFrame {
     private static final double DELAY = 256000.0/11025;
     private static final double WHITE_KEY_HEIGHT_TO_WIDTH = 3.562091503267974;
     private static final double BLACK_KEY_HEIGHT_TO_WIDTH = 3.783505154639175;
     private static final double BLACK_WHITE_WIDTH_RATIO   = 7.0/12;
+    private static final int CHORDS_HEIGHT = 500;
     private final int NUM_WHITE_KEYS;
 
     private final int ORIGINAL_WHITE_HEIGHT;
@@ -46,17 +46,21 @@ public class EnvironmentView extends JFrame
     }
 
     private void setupChords() {
-        chords = new JTextArea("Acorde _ \n 1. A \n 2. A \n 3. A");
+        chords = new JTextArea("Este es un programa para encontrar los acordes de una cancion \n\n\n");
+        chords.setMinimumSize(new Dimension(chords.getMinimumSize().width, CHORDS_HEIGHT));
         chords.setEditable(false);
-        chords.setBorder(BorderFactory.createEmptyBorder());
+        chords.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         chords.setBackground(Color.DARK_GRAY);
         chords.setForeground(Color.WHITE);
         chords.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
-        getContentPane().add(chords, BorderLayout.NORTH);
+        JScrollPane sp = new JScrollPane(chords, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        sp.setBackground(Color.DARK_GRAY);
+        sp.setBorder(BorderFactory.createEmptyBorder());
+        getContentPane().add(sp, BorderLayout.NORTH);
     }
 
-    private void updateChords(int numAcorde, String acorde1, String acorde2, String acorde3) {
-        chords.setText("Acorde " + numAcorde + ":\n   1. " + acorde1 + "\n   2. " + acorde2 + "\n   3. " + acorde3);
+    public void updateChords(String text) {
+        chords.setText(text);
     }
 
     /**
@@ -147,7 +151,6 @@ public class EnvironmentView extends JFrame
         step.addActionListener(e -> {
             running = false;
             env.step();
-            updateChords((int)(Math.random() * 100), "" +Math.random(), "" +Math.random(), "" +Math.random());
             showCells();
         });
         

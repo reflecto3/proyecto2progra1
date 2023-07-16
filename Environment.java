@@ -24,21 +24,24 @@ public class Environment
     private String mp3Actual;
     private MusicPlayer player;
     private int currentRow;
+    private int currentChord;
+    private int lastChord;
+    private EncuentraAcordes encAco;
     
     /**
      * Create an environment with the default size.
      */
-    public Environment(String csvFilename)
+    public Environment(String csvFilename, EncuentraAcordes encuentraAcordes)
     {
-        this(ROWS, COLS, csvFilename, null);
+        this(ROWS, COLS, csvFilename, null, encuentraAcordes);
     }
 
     /**
      * Create an environment with the default size.
      */
-    public Environment(String csvFilename, String mp3Filename)
+    public Environment(String csvFilename, String mp3Filename, EncuentraAcordes encuentraAcordes)
     {
-        this(ROWS, COLS, csvFilename, mp3Filename);
+        this(ROWS, COLS, csvFilename, mp3Filename, encuentraAcordes);
     }
 
     /**
@@ -46,7 +49,7 @@ public class Environment
      * @param numRows The number of rows.
      * @param numCols The number of cols;
      */
-    public Environment(int numRows, int numCols, String csvFilename, String mp3Filename)
+    public Environment(int numRows, int numCols, String csvFilename, String mp3Filename, EncuentraAcordes encuentraAcordes)
     {
         setup(numRows, numCols);
         view = new EnvironmentView(this, numRows, numCols);
@@ -54,6 +57,9 @@ public class Environment
         currentRow = 0;
         cancion = Matriz.matrizDeCancionCSV(numCols, csvFilename);
         mp3Actual = mp3Filename;
+        currentChord = -1; //-1 cuando no hay ningun acorde
+        lastChord = -1;
+        this.encAco = encuentraAcordes;
     }
     
     /**
@@ -97,6 +103,23 @@ public class Environment
                 setCellVolume(row, col, nextVolumes[row][col]);
             }
         }
+        // if (currentRow+1 == encAco.getFilasAcordes()[lastChord+1][0]) {
+        //     currentChord = lastChord+1;
+        // }
+        // else if (currentRow+1 == encAco.getFilasAcordes()[currentChord][1]+1) {
+        //     lastChord = currentChord;
+        //     currentChord = -1;
+        // }
+        if (sigAcordeCambia()) {
+            if (currentChord == -1) {
+                currentChord = lastChord+1;
+            }
+            else{
+                lastChord = currentChord;
+                currentChord = -1;
+            }
+            view.updateChords(encAco.execute(currentChord));
+        }
         currentRow++;
     }
     
@@ -113,6 +136,9 @@ public class Environment
             }
         }
         currentRow=0;
+        currentChord = -1;
+        lastChord = -1;
+        view.updateChords(encAco.execute(currentChord));
     }
 
     public boolean playCurrentSong() {
@@ -142,6 +168,26 @@ public class Environment
 
     public int getCurrentRow() {
         return currentRow;
+    }
+
+    public int getCurrentChord() {
+        return currentChord;
+    }
+
+    public int getLastChord() {
+        return lastChord;
+    }
+
+    public boolean sigAcordeCambia() {
+        try {
+            if (((currentChord == -1) && (currentRow+1 == encAco.getFilasAcordes()[lastChord+1][0])) || ((currentChord != -1) && (currentRow+1 == encAco.getFilasAcordes()[currentChord][1]))) {
+                return true;
+            }
+            return false;
+        } 
+        catch(ArrayIndexOutOfBoundsException e) {
+            return false;
+        }
     }
     
     /**

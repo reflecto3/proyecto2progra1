@@ -25,18 +25,17 @@ public class EncuentraAcordes {
     private String endFile;
 
     public static void main(String[] args) {
-        // new Environment("ArcticMonkeys505.csv");
         EncuentraAcordes arc = new EncuentraAcordes("ArcticMonkeys505.csv", "ArcticMonkeys505.begin.txt", "ArcticMonkeys505.end.txt");
+        new Environment("ArcticMonkeys505.csv", arc);
 
-        for (int i=0; i < arc.filasAcordes.length; i++) {
-            arc.execute(i);
-        }
+        // for (int i=0; i < arc.filasAcordes.length; i++) {
+        //     System.out.println(arc.execute(i));
+        // }
     }
 
-    public void execute(int numAcorde) {
+    public String execute(int numAcorde) {
         if (numAcorde < 0 || numAcorde > filasAcordes.length) {
-            System.out.println("ACORDE INVALIDO.");
-            return;
+            return "";
         }
         int[] volumenes = cancion.sumaPeriodicaSobreColumnas(filasAcordes[numAcorde][0], filasAcordes[numAcorde][1], NUMERO_DE_NOTAS);
         int[] clases = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
@@ -46,9 +45,7 @@ public class EncuentraAcordes {
         int[] clasesRelativizadas = clasesRelativizadas(clases);
 
         String palabra = formarPalabra(clasesRelativizadas, volumenes);
-        if (numAcorde == 70){
-            System.out.println();
-        }
+
         String[][] acepciones = DICCIONARIO.getClosestElement(palabra);
         desrelativizarAcepciones(acepciones, clases[0]);
 
@@ -56,9 +53,8 @@ public class EncuentraAcordes {
         String[][] acepcionesConCaracteristicas = matrizCaracteristicasNotas(acepciones, notasCaracteristicas);
     
         ArrayList<Double[]> inicioYFinalDeAcordes = leerTiemposDeAcordes(beginFile, endFile);
-        System.out.printf("%d: %.2f%n", numAcorde+1, inicioYFinalDeAcordes.get(numAcorde)[0]);
-        acordes(acepcionesConCaracteristicas);
-        System.out.println();
+        String toPrint = String.format("%d: %.2f%n", numAcorde+1, inicioYFinalDeAcordes.get(numAcorde)[0]) + acordes(acepcionesConCaracteristicas);
+        return toPrint;
     }
 
     /**
@@ -91,7 +87,7 @@ public class EncuentraAcordes {
         return acordes;
     }
 
-        private static ArrayList<Double[]> leerTiemposDeAcordes(String beginFile, String endFile) {
+    private static ArrayList<Double[]> leerTiemposDeAcordes(String beginFile, String endFile) {
         try {
             BufferedReader bfBegin = new BufferedReader(new FileReader(beginFile));
             BufferedReader bfEnd = new BufferedReader(new FileReader(endFile));
@@ -214,7 +210,8 @@ public class EncuentraAcordes {
     }
 
     // Metodo para ordenar y obtener los acordes de matrizCaracteristicasNotas
-    public static void acordes(String[][] matrizCaracteristicasNotas){
+    public static String acordes(String[][] matrizCaracteristicasNotas){
+        String forPrinting = "";
         int[] columnaDeNotasCaracteristicas = new int[matrizCaracteristicasNotas.length];
         String[] acordesAsociados = new String[matrizCaracteristicasNotas.length];
 
@@ -233,16 +230,21 @@ public class EncuentraAcordes {
         // Imprimimos los acordes si la cantidad de acordes es menor o igual que tres 
         if(acordesAsociados.length < 3){
             for(int k = 0; k < acordesAsociados.length; k++){
-                System.out.println(acordesAsociados[k]);
+                forPrinting += acordesAsociados[k] + "\n";
             }
+            return forPrinting;
         }
 
         // Si hay mas de 3 solo se reportan los primeros tres.
-        else{
-            for(int k = 0; k < 3; k++){
-                System.out.println(acordesAsociados[k]);    
-            }
+        for(int k = 0; k < 3; k++){
+            forPrinting += acordesAsociados[k] + "\n";
         }
+
+        return forPrinting;
+    }
+
+    public int[][] getFilasAcordes() {
+        return filasAcordes;
     }
 }
 
