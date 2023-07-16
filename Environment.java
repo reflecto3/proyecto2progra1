@@ -142,7 +142,7 @@ public class Environment
     }
 
     public boolean playCurrentSong() {
-        player.startPlaying(mp3Actual);
+        player.startPlayingFrom(mp3Actual);
         return true;
     }
     

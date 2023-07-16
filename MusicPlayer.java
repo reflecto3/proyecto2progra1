@@ -6,6 +6,8 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.AudioDevice;
 import javazoom.jl.player.FactoryRegistry;
 import javazoom.jl.player.advanced.AdvancedPlayer;
+import javazoom.jl.player.advanced.PlaybackEvent;
+import javazoom.jl.player.advanced.PlaybackListener;
 
 /**
  * Provide basic playing of MP3 files via the javazoom library.
@@ -18,13 +20,24 @@ public class MusicPlayer
 {
     // The current player. It might be null.
     private AdvancedPlayer player;
+    private int lastPlayedFrame;
+    private String filename;
     
+    public void setLastPlayedFrame(int lastPlayedFrame) {
+        this.lastPlayedFrame = lastPlayedFrame;
+    }
+
+    public int getLastPlayedFrame() {
+        return lastPlayedFrame;
+    }
+
     /**
      * Constructor for objects of class MusicFilePlayer
      */
-    public MusicPlayer()
+    public MusicPlayer(String filename)
     {
-        player = null;
+        setupPlayer(filename);
+        this.filename = filename;
     }
     
     /**
@@ -35,7 +48,6 @@ public class MusicPlayer
     public void playSample(String filename)
     {
         try {
-            setupPlayer(filename);
             player.play(500);
         }
         catch(JavaLayerException e) {
@@ -51,18 +63,18 @@ public class MusicPlayer
      * The method returns once the playing has been started.
      * @param filename The file to be played.
      */
-    public void startPlaying(final String filename)
+    public void play()
     {
         try {
-            setupPlayer(filename);
             Thread playerThread = new Thread() {
                 public void run()
                 {
                     try {
-                        player.play(5000);
+                        player.play(lastPlayedFrame, Integer.MAX_VALUE);
                     }
                     catch(JavaLayerException e) {
                         reportProblem(filename);
+                        
                     }
                     finally {
                         killPlayer();
@@ -75,11 +87,17 @@ public class MusicPlayer
             reportProblem(filename);
         }
     }
+
+    public void reset() {
+        lastPlayedFrame = 0;
+    }
     
     public void stop()
     {
         killPlayer();
     }
+
+
     
     /**
      * Set up the player ready to play the given file.
@@ -90,6 +108,12 @@ public class MusicPlayer
         try {
             InputStream is = getInputStream(filename);
             player = new AdvancedPlayer(is, createAudioDevice());
+            player.setPlayBackListener(new PlaybackListener() {
+                @Override
+                public void playbackFinished(PlaybackEvent event) {
+                    lastPlayedFrame = event.getFrame();
+                }
+            });
         }
         catch (IOException e) {
             reportProblem(filename);
@@ -133,7 +157,6 @@ public class MusicPlayer
         synchronized(this) {
             if(player != null) {
                 player.stop();
-                player = null;
             }
         }
     }
