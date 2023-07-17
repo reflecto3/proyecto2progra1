@@ -16,6 +16,7 @@ public class Cell
     private final Color BASE_COLOR;
     private int volume;
     private Color displayColor;
+    private boolean hasLine;
     // The cell's neighbors.
     // private Cell[] neighbors;
 
@@ -26,7 +27,7 @@ public class Cell
      */
     public Cell(Color BASE_COLOR)
     {
-        this(0, BASE_COLOR);
+        this(0, BASE_COLOR, false);
     }
     
     /**
@@ -34,11 +35,12 @@ public class Cell
      * @param initialVolume The initial volume
      * @param BASE_COLOR the permanent base color of the cell. Its real color will be a shade of the base color.
      */
-    public Cell(int initialVolume, Color BASE_COLOR)
+    public Cell(int initialVolume, Color BASE_COLOR, boolean hasLine)
     {
         volume = initialVolume;
         this.BASE_COLOR = BASE_COLOR;
         displayColor = shadeOf(BASE_COLOR, (double)initialVolume/MAX_VOLUME);
+        this.hasLine = hasLine;
     }
 
     /**
@@ -48,6 +50,10 @@ public class Cell
     public int getVolume()
     {
         return volume;
+    }
+
+    public boolean hasLine() {
+        return hasLine;
     }
     
     public Color getColor(){
@@ -63,6 +69,10 @@ public class Cell
         this.volume = volume;
         displayColor = shadeOf(BASE_COLOR, ((double)volume)/MAX_VOLUME);
     }   
+
+    public void setHasLine(boolean hasLine) {
+        this.hasLine = hasLine;
+    }
     
     /**
      * Mueve el color a RGB lineal antes de hacer calculos para sacar otro con una luminosidad reducida al factor puesto.

@@ -18,19 +18,60 @@ public class EncuentraAcordes {
     private static final Trie DICCIONARIO = Trie.crearDiccionario("ChordsDictBasicV2.txt");
     private static final int NUMERO_DE_NOTAS = 12;
     private static final int NUMERO_DE_TECLAS = 88;
+    public static final Track LuisMiguel = new Track("LuisMiguel-ElDiaQueMeQuieras(intro)");
+    public static final Track ArcMonkeys = new Track("ArcticMonkeys505");
+    public static final Track JohnOeth = new Track("John Oeth - Peaceful Sleep");
+    public static final Track UEFA = new Track("UEFA Champions League Anthem");
+    public static final Track Sum41 = new Track("Sum 41 - Pieces");
+    public static final Track TheCure = new Track("The Cure - A letter to Elise");
     private Matriz cancion;
     private int[][] filasAcordes;
     private static final double TIEMPO_POR_FILA = 256.0/11025;
     private String beginFile;
     private String endFile;
 
-    public static void main(String[] args) {
-        EncuentraAcordes arc = new EncuentraAcordes("ArcticMonkeys505.csv", "ArcticMonkeys505.begin.txt", "ArcticMonkeys505.end.txt");
-        new Environment("ArcticMonkeys505.csv", arc);
+    public static void luisMiguel() {
+        EncuentraAcordes ea = new EncuentraAcordes(LuisMiguel);
+        new Environment(LuisMiguel, ea);
+        ea.imprimirAcordes();
+    }
 
-        // for (int i=0; i < arc.filasAcordes.length; i++) {
-        //     System.out.println(arc.execute(i));
-        // }
+    public static void arcticMonkeys() {
+        EncuentraAcordes ea = new EncuentraAcordes(ArcMonkeys);
+        new Environment(ArcMonkeys, ea);
+        ea.imprimirAcordes();
+    }
+
+    public static void johnOeth() {
+        EncuentraAcordes ea = new EncuentraAcordes(JohnOeth);
+        new Environment(JohnOeth, ea);
+        ea.imprimirAcordes();
+    }
+
+    public static void uefa() {
+        EncuentraAcordes ea = new EncuentraAcordes(UEFA);
+        new Environment(UEFA, ea);
+        ea.imprimirAcordes();
+    }
+
+    public static void sum41() {
+        EncuentraAcordes ea = new EncuentraAcordes(Sum41);
+        new Environment(Sum41, ea);
+        ea.imprimirAcordes();
+    }
+
+    public static void theCure() {
+        EncuentraAcordes ea = new EncuentraAcordes(TheCure);
+        new Environment(TheCure, ea);
+        ea.imprimirAcordes();
+    }
+    
+
+
+    public void imprimirAcordes() {
+        for (int i=0; i < filasAcordes.length; i++) {
+            System.out.println(execute(i));
+        }
     }
 
     public String execute(int numAcorde) {
@@ -55,6 +96,19 @@ public class EncuentraAcordes {
         ArrayList<Double[]> inicioYFinalDeAcordes = leerTiemposDeAcordes(beginFile, endFile);
         String toPrint = String.format("%d: %.2f%n", numAcorde+1, inicioYFinalDeAcordes.get(numAcorde)[0]) + acordes(acepcionesConCaracteristicas);
         return toPrint;
+    }
+
+        /**
+     * Constructor de la clase EncuentraAcordes
+     * @param csvFile Archivo con los volumenes de las 88 notas cada 256/11025 segundos.
+     * @param beginFile Archivo con los tiempos en segundos en que inicia cada acorde.
+     * @param endFile Archivo con los tiempos en segundos en que termina cada acorde.
+     */
+    EncuentraAcordes(Track track) {
+        cancion = Matriz.matrizDeCancionCSV(NUMERO_DE_TECLAS, track.csvFile);
+        filasAcordes = filasDeAcordes(track.beginFile, track.endFile);
+        this.beginFile = track.beginFile;
+        this.endFile = track.endFile;
     }
 
     /**

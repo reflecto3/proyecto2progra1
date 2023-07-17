@@ -12,7 +12,7 @@ import java.io.*;
 public class Environment
 {
     // Default size for the environment.
-    private static final int ROWS = 43;
+    public static final int ROWS = 43;
     private static final int COLS = 88;
     public static final Color PINK = new Color(190, 105, 95);
     public static final Color LIGHT_BLUE = new Color(0, 174, 255);
@@ -21,12 +21,24 @@ public class Environment
     // Visualization of the environment.
     private final EnvironmentView view;
     private Matriz cancion;
-    private String mp3Actual;
     private MusicPlayer player;
     private int currentRow;
     private int currentChord;
     private int lastChord;
     private EncuentraAcordes encAco;
+    private String mp3Filename;
+    private int newChordChangeRow;
+    private int currentChordinNumRows;
+    private int lastChordinNumRows;
+    private int deleteChordChangeRow;
+    
+    /**
+     * Create an environment with the default size.
+     */
+    public Environment(Track track, EncuentraAcordes encuentraAcordes)
+    {
+        this(ROWS, COLS, track.csvFile, track.mp3File, encuentraAcordes);
+    }
     
     /**
      * Create an environment with the default size.
@@ -56,10 +68,13 @@ public class Environment
         view.showCells();
         currentRow = 0;
         cancion = Matriz.matrizDeCancionCSV(numCols, csvFilename);
-        mp3Actual = mp3Filename;
+        player = new MusicPlayer();
         currentChord = -1; //-1 cuando no hay ningun acorde
         lastChord = -1;
+        currentChordinNumRows = -1;
+        lastChordinNumRows = -1;
         this.encAco = encuentraAcordes;
+        this.mp3Filename = mp3Filename;
     }
     
     /**
@@ -71,15 +86,18 @@ public class Environment
         int numCols = cells[0].length;
         // Build a record of the next volume of each cell.
         int[][] nextVolumes = new int[numRows][numCols];
+        boolean[][] nextLines = new boolean[numRows][numCols];
         // Make the volume of each new cell the volume the cell below had before
         for(int row = 0; row <= numRows-2; row++) {
             for(int col = 0; col < numCols; col++) {
                 nextVolumes[row][col] = cells[row+1][col].getVolume();
+                nextLines[row][col] = cells[row+1][col].hasLine();
             }
-        //for the last row, get from cancion
+        //for the last row, get from cancion and if the chord changes put line
         try {
             for(int col = 0; col < numCols; col++) {
                 nextVolumes[numRows-1][col] = cancion.get(currentRow, col);
+                nextLines[numRows-1][col] = sigAcordeCambia();
             }
         }
         catch (ArrayIndexOutOfBoundsException e1) {
@@ -101,8 +119,10 @@ public class Environment
         for(int row = 0; row < numRows; row++) {
             for(int col = 0; col < numCols; col++) {
                 setCellVolume(row, col, nextVolumes[row][col]);
+                cells[row][col].setHasLine(nextLines[row][col]);
             }
         }
+
         // if (currentRow+1 == encAco.getFilasAcordes()[lastChord+1][0]) {
         //     currentChord = lastChord+1;
         // }
@@ -113,14 +133,26 @@ public class Environment
         if (sigAcordeCambia()) {
             if (currentChord == -1) {
                 currentChord = lastChord+1;
+                newChordChangeRow = currentRow + numRows;
             }
             else{
                 lastChord = currentChord;
                 currentChord = -1;
+                deleteChordChangeRow = currentRow + numRows;
             }
-            view.updateChords(encAco.execute(currentChord));
+
         }
         currentRow++;
+
+        if (currentRow == newChordChangeRow) {
+            currentChordinNumRows = lastChordinNumRows+1;
+            view.updateChords(encAco.execute(currentChordinNumRows));
+        }
+        else if (currentRow == deleteChordChangeRow) {
+            lastChordinNumRows = currentChordinNumRows;
+            currentChordinNumRows = -1;
+            view.updateChords(encAco.execute(currentChordinNumRows));
+        }
     }
     
     /**
@@ -138,12 +170,19 @@ public class Environment
         currentRow=0;
         currentChord = -1;
         lastChord = -1;
+        newChordChangeRow = -1;
+        deleteChordChangeRow = -1;
+        currentChordinNumRows = -1;
+        lastChordinNumRows = -1;
         view.updateChords(encAco.execute(currentChord));
     }
 
-    public boolean playCurrentSong() {
-        player.startPlayingFrom(mp3Actual);
-        return true;
+    public void playCurrentSong() {
+        player.startPlaying(mp3Filename);
+    }
+
+    public void stopMusic() {
+        player.stop();
     }
     
     /**

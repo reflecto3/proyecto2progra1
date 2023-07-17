@@ -1,0 +1,25 @@
+#BlueJ class context
+comment0.target=Cell
+comment0.text=\r\n\ Celula\ para\ pianola\ de\ piano\r\n\ \r\n\ @author\ Jose\ Javier\ Alvarez\ Pacheco\r\n\ @version\ 2023.06.07\r\n
+comment1.params=BASE_COLOR
+comment1.target=Cell(java.awt.Color)
+comment1.text=\r\n\ Set\ the\ cell\ with\ initial\ volume\ 0\ and\ color\ color\r\n\ @param\ BASE_COLOR\ the\ array\ of\ rgb\ values\ of\ the\ color\ the\ cell\ will\ be\ *permanently*\ set\ to.\r\n\ \r\n
+comment2.params=initialVolume\ BASE_COLOR\ hasLine
+comment2.target=Cell(int,\ java.awt.Color,\ boolean)
+comment2.text=\r\n\ Set\ the\ initial\ volume\ and\ the\ color\ of\ the\ cell.\r\n\ @param\ initialVolume\ The\ initial\ volume\r\n\ @param\ BASE_COLOR\ the\ permanent\ base\ color\ of\ the\ cell.\ Its\ real\ color\ will\ be\ a\ shade\ of\ the\ base\ color.\r\n
+comment3.params=
+comment3.target=int\ getVolume()
+comment3.text=\r\n\ Get\ the\ volume\ of\ this\ cell.\r\n\ @return\ The\ state.\r\n
+comment4.params=
+comment4.target=boolean\ hasLine()
+comment5.params=
+comment5.target=java.awt.Color\ getColor()
+comment6.params=volume
+comment6.target=void\ setVolume(int)
+comment6.text=\r\n\ Set\ the\ volume\ (and\ therefore\ color)\ of\ this\ cell.\r\n\ @param\ volume\ The\ state.\r\n
+comment7.params=hasLine
+comment7.target=void\ setHasLine(boolean)
+comment8.params=colorBase\ factor
+comment8.target=java.awt.Color\ shadeOf(java.awt.Color,\ double)
+comment8.text=\r\n\ Mueve\ el\ color\ a\ RGB\ lineal\ antes\ de\ hacer\ calculos\ para\ sacar\ otro\ con\ una\ luminosidad\ reducida\ al\ factor\ puesto.\r\n\ @param\ colorBase\ color\ base\ de\ entrada\r\n\ @param\ factor\ factor\ de\ luminosidad\ original\ deseado\ (0-1)\r\n\ @return\ un\ color\ que\ es\ el\ color\ de\ entrada\ con\ una\ luminosidad\ reducida\ al\ factor\ escrito\r\n
+numComments=9

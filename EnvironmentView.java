@@ -9,7 +9,7 @@ import java.awt.*;
  * @version  2016.02.29
  */
 public class EnvironmentView extends JFrame {
-    private static final double DELAY = 256000.0/11025;
+    public static final double DELAY = 256000.0/11025;
     private static final double WHITE_KEY_HEIGHT_TO_WIDTH = 3.562091503267974;
     private static final double BLACK_KEY_HEIGHT_TO_WIDTH = 3.783505154639175;
     private static final double BLACK_WHITE_WIDTH_RATIO   = 7.0/12;
@@ -91,8 +91,9 @@ public class EnvironmentView extends JFrame {
             int numCols = cells[row].length;
             for(int col = 0; col < numCols; col++) {
                 Color color = cells[row][col].getColor();
-                view.drawMark(col, row, color);
+                view.drawMark(col, row, color, cells[row][col].hasLine());
             }
+
         }
         
 
@@ -136,6 +137,7 @@ public class EnvironmentView extends JFrame {
         run.addActionListener(e -> {
             if(!running) {
                 running = true;
+                env.playCurrentSong();
                 startTime = System.currentTimeMillis();
                 startRow = env.getCurrentRow();
                 try {
@@ -147,21 +149,22 @@ public class EnvironmentView extends JFrame {
         });
         
         // Single stepping.
-        final JButton step = new JButton("Step");
-        step.addActionListener(e -> {
-            running = false;
-            env.step();
-            showCells();
-        });
+        // final JButton step = new JButton("Step");
+        // step.addActionListener(e -> {
+        //     running = false;
+        //     env.step();
+        //     showCells();
+        // });
         
         // Pause the animation.
-        final JButton pause = new JButton("Pause");
-        pause.addActionListener(e -> running = false);
+        // final JButton pause = new JButton("Pause");
+        // pause.addActionListener(e -> running = false);
         
         // Reset of the environment
         final JButton reset = new JButton("Reset");
         reset.addActionListener(e -> {
             running = false;
+            env.stopMusic();
             env.reset();
             showCells();
         });
@@ -172,8 +175,8 @@ public class EnvironmentView extends JFrame {
         // Place the button controls.
         JPanel controls = new JPanel();
         controls.add(run);
-        controls.add(step);
-        controls.add(pause);
+        // controls.add(step);
+        // controls.add(pause);
         controls.add(reset);
         controls.setBackground(Color.DARK_GRAY);
         
@@ -292,12 +295,16 @@ public class EnvironmentView extends JFrame {
         /**
          * Paint on grid location on this field in a given color.
          */
-        public void drawMark(int x, int y, Color color)
+        public void drawMark(int x, int y, Color color, boolean hasLine)
         {
             int finalSideWidth = (int)((x+1)*xScale+ blackWidth/2) > (int)(x*xScale+ blackWidth/2)+(int)xScale ? (int)xScale+1 : (int)xScale;
             int finalSideHeight = (int)((y+1)*yScale) > (int)(y*yScale)+(int)yScale+1 ? (int)yScale+2 : (int)yScale+1;
             g.setColor(color);
             g.fillRect((int)((x+0.5) * xScale), (int)(y * yScale+2*whiteHeight), (int)finalSideWidth, (int)finalSideHeight);
+            if (hasLine) {
+                g.setColor(Color.YELLOW);
+                g.fillRect((int)((x+0.5) * xScale), (int)(y * yScale+2*whiteHeight), (int)finalSideWidth, 2);
+            }
         }
         
         public void drawVolume(int x, int y, Color color, double heightPercentage) {
