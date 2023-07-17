@@ -27,10 +27,10 @@ public class Environment
     private int lastChord;
     private EncuentraAcordes encAco;
     private String mp3Filename;
-    private int newChordChangeRow;
-    private int currentChordinNumRows;
-    private int lastChordinNumRows;
-    private int deleteChordChangeRow;
+    // private int newChordChangeRow;
+    // private int currentChordinNumRows;
+    // private int lastChordinNumRows;
+    // private int deleteChordChangeRow;
     
     /**
      * Create an environment with the default size.
@@ -71,8 +71,8 @@ public class Environment
         player = new MusicPlayer();
         currentChord = -1; //-1 cuando no hay ningun acorde
         lastChord = -1;
-        currentChordinNumRows = -1;
-        lastChordinNumRows = -1;
+        // currentChordinNumRows = -1;
+        // lastChordinNumRows = -1;
         this.encAco = encuentraAcordes;
         this.mp3Filename = mp3Filename;
     }
@@ -97,21 +97,11 @@ public class Environment
         try {
             for(int col = 0; col < numCols; col++) {
                 nextVolumes[numRows-1][col] = cancion.get(currentRow, col);
-                nextLines[numRows-1][col] = sigAcordeCambia();
+                nextLines[numRows-1][col] = siAcordeCambia();
             }
         }
         catch (ArrayIndexOutOfBoundsException e1) {
-            // try {
-            //     Thread.sleep(5000);
-            //     view.setVisible(false);
-            //     view.dispose();
-            //     System.exit(0);
-            // }
-            // catch (InterruptedException e2) {
-            //     view.setVisible(false);
-            //     view.dispose();
-            //     System.exit(0);
-            // }
+
         }
 
         }
@@ -123,36 +113,40 @@ public class Environment
             }
         }
 
-        // if (currentRow+1 == encAco.getFilasAcordes()[lastChord+1][0]) {
-        //     currentChord = lastChord+1;
-        // }
-        // else if (currentRow+1 == encAco.getFilasAcordes()[currentChord][1]+1) {
-        //     lastChord = currentChord;
-        //     currentChord = -1;
-        // }
-        if (sigAcordeCambia()) {
+        if (siAcordeCambia()) {
+
+            Thread thread = new Thread() {
+                int cc = currentChord;
+                int lc = lastChord;
+                public void run() {
+                    try {
+                        sleep((long)EnvironmentView.DELAY*numRows);
+                        if (cc == -1) {
+                            cc = lc+1;
+                        }
+                        else{
+                            lc = cc;
+                            cc = -1;
+                        }
+                        view.updateChords(encAco.execute(cc));
+                    }
+                    catch (InterruptedException ex) {
+
+                    }
+
+                }
+            };
+            thread.start();
             if (currentChord == -1) {
-                currentChord = lastChord+1;
-                newChordChangeRow = currentRow + numRows;
+                currentChord = lastChord +1;
             }
-            else{
+            else {
                 lastChord = currentChord;
                 currentChord = -1;
-                deleteChordChangeRow = currentRow + numRows;
             }
-
         }
         currentRow++;
 
-        if (currentRow == newChordChangeRow) {
-            currentChordinNumRows = lastChordinNumRows+1;
-            view.updateChords(encAco.execute(currentChordinNumRows));
-        }
-        else if (currentRow == deleteChordChangeRow) {
-            lastChordinNumRows = currentChordinNumRows;
-            currentChordinNumRows = -1;
-            view.updateChords(encAco.execute(currentChordinNumRows));
-        }
     }
     
     /**
@@ -170,10 +164,6 @@ public class Environment
         currentRow=0;
         currentChord = -1;
         lastChord = -1;
-        newChordChangeRow = -1;
-        deleteChordChangeRow = -1;
-        currentChordinNumRows = -1;
-        lastChordinNumRows = -1;
         view.updateChords(encAco.execute(currentChord));
     }
 
@@ -217,7 +207,7 @@ public class Environment
         return lastChord;
     }
 
-    public boolean sigAcordeCambia() {
+    public boolean siAcordeCambia() {
         try {
             if (((currentChord == -1) && (currentRow+1 == encAco.getFilasAcordes()[lastChord+1][0])) || ((currentChord != -1) && (currentRow+1 == encAco.getFilasAcordes()[currentChord][1]))) {
                 return true;

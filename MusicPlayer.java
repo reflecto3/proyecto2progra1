@@ -61,13 +61,12 @@ public class MusicPlayer
                 {
                     try {
                         Thread.sleep((int)(EnvironmentView.DELAY*Environment.ROWS));
-                        player.play(5000);
+                        player.play(Integer.MAX_VALUE);
                     }
                     catch(JavaLayerException e) {
                         reportProblem(filename);
                     }
                     catch (InterruptedException ex) {
-
                     }
                     finally {
                         killPlayer();
@@ -140,8 +139,15 @@ public class MusicPlayer
     {
         synchronized(this) {
             if(player != null) {
-                player.stop();
+                try {
+                    player.stop();
+                }
+                catch(NullPointerException e) {
+
+                }
+                finally {
                 player = null;
+                }
             }
         }
     }

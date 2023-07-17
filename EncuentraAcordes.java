@@ -30,6 +30,10 @@ public class EncuentraAcordes {
     private String beginFile;
     private String endFile;
 
+    public static void main(String[] args) {
+        luisMiguel();
+    }
+
     public static void luisMiguel() {
         EncuentraAcordes ea = new EncuentraAcordes(LuisMiguel);
         new Environment(LuisMiguel, ea);
